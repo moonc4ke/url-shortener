@@ -5,13 +5,12 @@ use App\Models\Url;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 
 class UrlController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Home');
+        return inertia('Home');
     }
 
     public function shorten(Request $request)
@@ -31,12 +30,12 @@ class UrlController extends Controller
         ]);
 
         if ($response->json('matches')) {
-            return back()->withErrors(['url' => 'The URL is not safe to shorten.']);
+            return response()->json(['errors' => ['url' => ['The URL is not safe to shorten.']]], 422);
         }
 
         $url = Url::where('original_url', $originalUrl)->first();
         if ($url) {
-            return Inertia::render('Home', ['short_url' => url($url->short_url)]);
+            return response()->json(['short_url' => url($url->short_url)]);
         }
 
         $shortUrl = Str::random(6);
@@ -49,7 +48,7 @@ class UrlController extends Controller
             'short_url' => $shortUrl,
         ]);
 
-        return Inertia::render('Home', ['short_url' => url($shortUrl)]);
+        return response()->json(['short_url' => url($shortUrl)]);
     }
 
     public function redirect($hash)

@@ -1,9 +1,10 @@
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import { useForm, usePage } from "@inertiajs/inertia-vue3";
+import { ref, reactive, onMounted } from 'vue';
+import axios from 'axios';
+import { usePage } from '@inertiajs/inertia-vue3';
 
-const url = ref("");
-const shortUrl = ref("");
+const url = ref('');
+const shortUrl = ref('');
 const errors = reactive({});
 
 const page = usePage();
@@ -14,19 +15,18 @@ onMounted(() => {
     }
 });
 
-const submit = () => {
-    const form = useForm({ url: url.value });
-    form.post("/shorten", {
-        onSuccess: (page) => {
-            if (page.props.short_url) {
-                shortUrl.value = page.props.short_url;
-            }
-            errors.url = "";
-        },
-        onError: (formErrors) => {
-            errors.url = formErrors.url;
-        },
-    });
+const submit = async () => {
+    try {
+        const response = await axios.post('/shorten', { url: url.value });
+        shortUrl.value = response.data.short_url;
+        errors.url = '';
+    } catch (error) {
+        if (error.response && error.response.data.errors) {
+            errors.url = error.response.data.errors.url[0];
+        } else {
+            console.error(error);
+        }
+    }
 };
 </script>
 
@@ -50,3 +50,10 @@ const submit = () => {
         <div v-if="errors.url" class="text-red-600">{{ errors.url }}</div>
     </div>
 </template>
+
+<style scoped>
+.error {
+    color: red;
+}
+</style>
+
