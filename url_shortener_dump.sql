@@ -1,0 +1,16 @@
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "migrations" ("id" integer primary key autoincrement not null, "migration" varchar not null, "batch" integer not null);
+INSERT INTO migrations VALUES(1,'2024_06_07_141546_create_urls_table',1);
+INSERT INTO migrations VALUES(2,'2024_06_07_164606_create_sessions_table',1);
+CREATE TABLE IF NOT EXISTS "urls" ("id" integer primary key autoincrement not null, "original_url" varchar not null, "short_url" varchar not null, "created_at" datetime, "updated_at" datetime);
+INSERT INTO urls VALUES(1,'https://www.youtube.com/watch?v=a7_WFUlFS94','GLcSpc','2024-06-07 17:02:58','2024-06-07 17:02:58');
+CREATE TABLE IF NOT EXISTS "sessions" ("id" varchar not null, "user_id" integer, "ip_address" varchar, "user_agent" text, "payload" text not null, "last_activity" integer not null, primary key ("id"));
+INSERT INTO sessions VALUES('NoW82T9q0z10ZaMWCy1RRI02hCcw6YlRnTjwZ9bn',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36','YTozOntzOjY6Il90b2tlbiI7czo0MDoia01oZkJtODZIcWhuTXVkTkpVUXhLYXV2VGN5cFhROWhCQjhnMzlrZCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjg6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9HTGNTcGMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1717779833);
+DELETE FROM sqlite_sequence;
+INSERT INTO sqlite_sequence VALUES('migrations',2);
+INSERT INTO sqlite_sequence VALUES('urls',1);
+CREATE UNIQUE INDEX "urls_short_url_unique" on "urls" ("short_url");
+CREATE INDEX "sessions_user_id_index" on "sessions" ("user_id");
+CREATE INDEX "sessions_last_activity_index" on "sessions" ("last_activity");
+COMMIT;
